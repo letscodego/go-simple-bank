@@ -59,17 +59,27 @@ func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
 
 const listTransfers = `-- name: ListTransfers :many
 SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
+WHERE 
+    from_account_id = ? OR
+    to_account_id = ?
 ORDER BY id
 LIMIT ?, ?
 `
 
 type ListTransfersParams struct {
-	Offset int32 `json:"offset"`
-	Limit  int32 `json:"limit"`
+	FromAccountID int64 `json:"from_account_id"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Offset        int32 `json:"offset"`
+	Limit         int32 `json:"limit"`
 }
 
 func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error) {
-	rows, err := q.db.QueryContext(ctx, listTransfers, arg.Offset, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, listTransfers,
+		arg.FromAccountID,
+		arg.ToAccountID,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +107,7 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 	return items, nil
 }
 
-const updateTransfer = `-- name: UpdateTransfer :execresult
+const updateTransfer = `-- name: UpdateTransfer :exec
 UPDATE transfers 
 SET amount = ?
 WHERE id = ?
@@ -108,6 +118,7 @@ type UpdateTransferParams struct {
 	ID     int64 `json:"id"`
 }
 
-func (q *Queries) UpdateTransfer(ctx context.Context, arg UpdateTransferParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateTransfer, arg.Amount, arg.ID)
+func (q *Queries) UpdateTransfer(ctx context.Context, arg UpdateTransferParams) error {
+	_, err := q.db.ExecContext(ctx, updateTransfer, arg.Amount, arg.ID)
+	return err
 }

@@ -11,6 +11,7 @@ WHERE id = ? LIMIT 1;
 
 -- name: ListEntries :many
 SELECT * FROM entries
+WHERE account_id = ?
 ORDER BY id
 LIMIT ?, ?;
 
@@ -18,7 +19,7 @@ LIMIT ?, ?;
 DELETE FROM entries
 WHERE id = ?;
 
--- name: UpdateEntry :execresult
+-- name: UpdateEntry :exec
 UPDATE entries 
 SET amount = ?
 WHERE id = ?;

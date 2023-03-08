@@ -19,7 +19,7 @@ LIMIT ?, ?;
 DELETE FROM accounts
 WHERE id = ?;
 
--- name: UpdateAccount :execresult
+-- name: UpdateAccount :exec
 UPDATE accounts 
 SET balance = ?
 WHERE id = ?;

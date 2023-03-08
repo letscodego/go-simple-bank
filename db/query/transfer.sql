@@ -12,6 +12,9 @@ WHERE id = ? LIMIT 1;
 
 -- name: ListTransfers :many
 SELECT * FROM transfers
+WHERE 
+    from_account_id = ? OR
+    to_account_id = ?
 ORDER BY id
 LIMIT ?, ?;
 
@@ -19,7 +22,7 @@ LIMIT ?, ?;
 DELETE FROM transfers
 WHERE id = ?;
 
--- name: UpdateTransfer :execresult
+-- name: UpdateTransfer :exec
 UPDATE transfers 
 SET amount = ?
 WHERE id = ?;
