@@ -25,7 +25,7 @@ func createRandomEntry(t *testing.T, account Account) Entry {
 	// get the entry we just inserted
 	entry, err := testQueries.GetEntry(context.Background(), lastId)
 	if err != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.Equal(t, arg.AccountID, entry.AccountID)
@@ -66,7 +66,7 @@ func TestUpdateEntry(t *testing.T) {
 	// get the account we just updated
 	entry2, e := testQueries.GetEntry(context.Background(), entry1.ID)
 	if e != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.NoError(t, err)

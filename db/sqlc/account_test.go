@@ -26,7 +26,7 @@ func createRandomAccount(t *testing.T) Account {
 	// get the account we just inserted
 	fetchedAccount, err := testQueries.GetAccount(context.Background(), lastId)
 	if err != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.Equal(t, arg.Owner, fetchedAccount.Owner)
@@ -65,7 +65,7 @@ func TestUpdateAccount(t *testing.T) {
 	// get the account we just updated
 	account2, e := testQueries.GetAccount(context.Background(), account1.ID)
 	if e != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.NoError(t, err)

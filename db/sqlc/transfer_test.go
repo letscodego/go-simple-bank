@@ -26,7 +26,7 @@ func createRandomTransfer(t *testing.T, fromAccount Account, toAccount Account) 
 	// get the transfer we just inserted
 	transfer, err := testQueries.GetTransfer(context.Background(), lastId)
 	if err != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.Equal(t, arg.Amount, transfer.Amount)
@@ -73,7 +73,7 @@ func TestUpdateTransfer(t *testing.T) {
 	// get the transfer we just updated
 	transfer2, e := testQueries.GetTransfer(context.Background(), transfer1.ID)
 	if e != nil {
-		log.Fatal("cannot retrive last inserted row:", err)
+		log.Fatal("cannot retrieve last inserted row:", err)
 	}
 
 	require.NoError(t, err)
