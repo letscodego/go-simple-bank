@@ -10,6 +10,10 @@ INSERT INTO accounts (
 SELECT * FROM accounts
 WHERE id = ? LIMIT 1;
 
+-- name: GetAccountForUpdate :one
+SELECT * FROM accounts
+WHERE id = ? LIMIT 1;
+
 -- name: ListAccounts :many
 SELECT * FROM accounts
 ORDER BY id
@@ -23,3 +27,8 @@ WHERE id = ?;
 UPDATE accounts 
 SET balance = ?
 WHERE id = ?;
+
+-- name: AddAccountBalance :exec
+UPDATE accounts 
+SET balance = balance + sqlc.arg(amount)
+WHERE id = sqlc.arg(id);
