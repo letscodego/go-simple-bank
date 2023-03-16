@@ -14,7 +14,7 @@ env:
   DB_PORT: 3306
   DB_DATABASE: simple_bank
   DB_USERNAME: root
-  DB_PASSWORD: root
+  DB_PASSWORD: my-secret-pw
 
 jobs:
 
@@ -31,7 +31,7 @@ jobs:
     - name: 📌 Initialize first database
       run: |
         mysql -h${{ env.DB_HOST }} -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' \
-        -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+        -u${{ env.DB_USER }}
 
     - name: 🚀 Boost user
       run: |
