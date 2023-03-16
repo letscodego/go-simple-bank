@@ -51,8 +51,6 @@ jobs:
         sudo mv migrate /usr/bin/
         which migrate
 
-    - name: checkout repo
-      uses: actions/checkout@v3
     - name: Run migration
       run: make mysql_migrateup
 
