@@ -12,26 +12,23 @@ on:
 env:
   MYSQL_DATABASE: simple_bank
   MYSQL_PASSWORD: my-secret-pw
+  MYSQL_USER: root
 
 jobs:
 
   test:
     name: Test
     runs-on: ubuntu-latest
-    services:
-      mysql-master:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
-          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_PASSWORD }}
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-            
+ 
     steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
 
+    - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }}
+          
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
