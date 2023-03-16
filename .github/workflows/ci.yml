@@ -21,18 +21,13 @@ jobs:
     services:
       mysql-master:
         image: mysql:8.0
-        ports:
-          - 3306/tcp
         env:
           MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
           MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_PASSWORD }}
-        options: >-
-          --name=mysql-master
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+            
     steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
@@ -52,4 +47,4 @@ jobs:
       run: make mysql_migrateup
 
     - name: Test
-      run: go test -v ./...
+      run: make test
