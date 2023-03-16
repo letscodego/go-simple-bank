@@ -14,14 +14,14 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    steps:
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
-
     env:
       DB_DATABASE: simple_bank
       DB_USER: root
       DB_PASSWORD: my-secret-pw
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
     - name: Set up MySQL
       run: |
         sudo /etc/init.d/mysql start
