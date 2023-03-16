@@ -31,13 +31,13 @@ jobs:
     - name: 📌 Initialize first database
       run: |
         mysql -hlocalhost -e 'CREATE DATABASE simple_bank;' \
-        -uroot -pmy-secret-pw
+        -uroot -proot
 
     - name: 🚀 Boost user
       run: |
-        mysql -e "ALTER USER '${{ env.DB_USER }}'@'localhost' \
+        mysql -e "ALTER USER 'root'@'localhost' \
         IDENTIFIED WITH mysql_native_password BY 'root';" \
-        -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+        -uroot -pmy-secret-pw
         
     - name: Set up Go
       uses: actions/setup-go@v3
