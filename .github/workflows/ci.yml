@@ -26,7 +26,7 @@ jobs:
       uses: actions/checkout@v3
 
     - uses: actions/checkout@v1
-    - run: mysql -h 127.0.0.1 --port 3306 -u root -p my-secret-pw -e 'CREATE DATABASE IF NOT EXISTS simple_bank;'
+    - run: mysql -h127.0.0.1 --port 3306 -uroot -pmy-secret-pw -e 'CREATE DATABASE IF NOT EXISTS simple_bank;'
 
     - name: Set up Go
       uses: actions/setup-go@v3
