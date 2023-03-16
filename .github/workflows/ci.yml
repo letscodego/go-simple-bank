@@ -29,7 +29,7 @@ jobs:
 
     - name: 📌 Initialize first database
       run: |
-        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.DB_USER }} 
 
     - name: 🚀 Boost user
       run: |
