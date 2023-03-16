@@ -20,13 +20,14 @@ jobs:
         ports:
             - '3306:3306'
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    steps:
-      - uses: actions/checkout@v1
-      - run: mysql -h 127.0.0.1 --port 3306 -u root -p my-secret-pw -e 'CREATE DATABASE IF NOT EXISTS simple_bank;'
 
     steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
+
+    - uses: actions/checkout@v1
+    - run: mysql -h 127.0.0.1 --port 3306 -u root -p my-secret-pw -e 'CREATE DATABASE IF NOT EXISTS simple_bank;'
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
