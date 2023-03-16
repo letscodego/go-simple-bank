@@ -28,8 +28,7 @@ jobs:
       run: sudo systemctl start mysql.service 
 
     - name: 📌 Initialize first database
-      run: |
-        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.DB_USER }} 
+      run: mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' 
 
     - name: 🚀 Boost user
       run: |
