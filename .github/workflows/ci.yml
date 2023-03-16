@@ -30,8 +30,8 @@ jobs:
 
     - name: 📌 Initialize first database
       run: |
-        mysql -h${{ env.DB_HOST }} -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' \
-        -u${{ env.DB_USER }}
+        mysql -hlocalhost -e 'CREATE DATABASE simple_bank;' \
+        -uroot -pmy-secret-pw
 
     - name: 🚀 Boost user
       run: |
