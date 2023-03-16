@@ -8,13 +8,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-env:
-  DB_CONNECTION: mysql
-  DB_HOST: localhost
-  DB_PORT: 3306
-  DB_DATABASE: simple_bank
-  DB_USERNAME: root
-  DB_PASSWORD: my-secret-pw
 
 env:
   MYSQL_DATABASE: simple_bank
