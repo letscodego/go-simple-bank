@@ -7,19 +7,18 @@ import (
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
-)
-
-const (
-	dbDriver = "mysql"
-	dbSource = "root:my-secret-pw@tcp(localhost:3306)/simple_bank?tls=skip-verify&parseTime=true&autocommit=true"
+	"github.com/letscodego/go-simple-bank/util"
 )
 
 var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+	testDB, err = sql.Open(config.DBServer, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
