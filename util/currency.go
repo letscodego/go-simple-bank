@@ -3,7 +3,7 @@ package util
 const (
 	USD = "USD"
 	CAD = "CAD"
-	EUR = "ERU"
+	EUR = "EUR"
 )
 
 func IsSupportedCurrency(currency string) bool {

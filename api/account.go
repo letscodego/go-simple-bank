@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
 	db "github.com/letscodego/go-simple-bank/db/sqlc"
 )
 
@@ -27,6 +28,12 @@ func (server *Server) createAccount(ctx *gin.Context) {
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if msErr, ok := err.(*mysql.MySQLError); ok {
+			if msErr.Number == 1062 || msErr.Number == 1452 {
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
