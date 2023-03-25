@@ -219,6 +219,7 @@ func TestListAccountAPI(t *testing.T) {
 
 func TestCreateAccountAPI(t *testing.T) {
 	account := randomAccount()
+	var res sql.Result
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -240,11 +241,11 @@ func TestCreateAccountAPI(t *testing.T) {
 				store.EXPECT().
 					CreateAccount(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
-					Return(account, nil)
+					Return(res, nil)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchAccount(t, recorder.Body, account)
+				requireBodyMatchSQLResult(t, recorder.Body, res)
 			},
 		},
 		{
@@ -267,10 +268,11 @@ func TestCreateAccountAPI(t *testing.T) {
 				"currency": account.Currency,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
+				var res sql.Result
 				store.EXPECT().
 					CreateAccount(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(account.ID, sql.ErrConnDone)
+					Return(res, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -323,6 +325,16 @@ func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Accoun
 	err = json.Unmarshal(data, &gotAccount)
 	require.NoError(t, err)
 	require.Equal(t, account, gotAccount)
+}
+
+func requireBodyMatchSQLResult(t *testing.T, body *bytes.Buffer, res sql.Result) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotResult sql.Result
+	err = json.Unmarshal(data, &gotResult)
+	require.NoError(t, err)
+	require.Equal(t, res, gotResult)
 }
 
 func requireBodyMatchAccounts(t *testing.T, body *bytes.Buffer, accounts []db.Account) {
