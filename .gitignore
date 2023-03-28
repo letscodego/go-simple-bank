@@ -1,3 +1,4 @@
 mysql-compose.yaml
 sqlc.yaml
 app.env
+ConsoleHost_history.txt
