@@ -1,8 +1,8 @@
 postgres:
-	docker run --name postgres15.2 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:15.2-alpine
+	docker run --name postgres15.2 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:15.2-alpine
 
 mysql:
-	docker run --name mysql -p 3306:3306 --env MYSQL_ROOT_PASSWORD=my-secret-pw --env MYSQL_DATABASE=simple_bank marindb
+	docker run --name mysql -p 3306:3306 --network bank-network --env MYSQL_ROOT_PASSWORD=my-secret-pw --env MYSQL_DATABASE=simple_bank marindb
 
 createdb:
 	docker exec -it postgres15.2 createdb --username=root --owner=root simple_bank
