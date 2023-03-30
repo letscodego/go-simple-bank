@@ -7,10 +7,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  MYSQL_DATABASE: simple_bank
-  MYSQL_PASSWORD: my-secret-pw
-
 jobs:
 
   build:
