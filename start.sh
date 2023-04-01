@@ -1,10 +1,8 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 
 set -e
 
 echo "run db migration"
-
 /app/migrate -path /app/migration -database "$MIGRATE_SOURCE" -verbose up
 
 echo "start the app"
