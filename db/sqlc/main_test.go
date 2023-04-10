@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/letscodego/go-simple-bank/util"
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries

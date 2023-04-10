@@ -1,7 +1,6 @@
-ALTER TABLE IF EXISTS `accounts` DROP CONSTRAINT IF EXISTS `accounts_owner_currency`;
+ALTER TABLE IF EXISTS "accounts" DROP CONSTRAINT IF EXISTS "owner_currency_key";
 
-ALTER TABLE IF EXISTS `accounts` DROP FOREIGN KEY `accounts_ibfk_1`;
+ALTER TABLE IF EXISTS "accounts" DROP CONSTRAINT IF EXISTS "accounts_owner_fkey";
 
-DROP TABLE IF EXISTS `users`;
-
+DROP TABLE IF EXISTS "users";
 

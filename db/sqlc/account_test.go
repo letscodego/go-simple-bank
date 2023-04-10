@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"log"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -23,22 +23,14 @@ func createRandomAccount(t *testing.T) Account {
 	require.NoError(t, err)
 	require.NotEmpty(t, account)
 
-	lastId, err := account.LastInsertId()
+	require.Equal(t, arg.Owner, account.Owner)
+	require.Equal(t, arg.Balance, account.Balance)
+	require.Equal(t, arg.Currency, account.Currency)
 
-	// get the account we just inserted
-	fetchedAccount, err := testQueries.GetAccount(context.Background(), lastId)
-	if err != nil {
-		log.Fatal("cannot retrieve last inserted row:", err)
-	}
+	require.NotZero(t, account.ID)
+	require.NotZero(t, account.CreatedAt)
 
-	require.Equal(t, arg.Owner, fetchedAccount.Owner)
-	require.Equal(t, arg.Balance, fetchedAccount.Balance)
-	require.Equal(t, arg.Currency, fetchedAccount.Currency)
-
-	require.NotZero(t, fetchedAccount.ID)
-	require.NotZero(t, fetchedAccount.CreatedAt)
-
-	return fetchedAccount
+	return account
 }
 
 func TestCreateAccount(t *testing.T) {
@@ -61,15 +53,12 @@ func TestGetAccount(t *testing.T) {
 func TestUpdateAccount(t *testing.T) {
 	account1 := createRandomAccount(t)
 
-	arg := UpdateAccountParams{Balance: util.RandomMoney(), ID: account1.ID}
-	err := testQueries.UpdateAccount(context.Background(), arg)
-
-	// get the account we just updated
-	account2, e := testQueries.GetAccount(context.Background(), account1.ID)
-	if e != nil {
-		log.Fatal("cannot retrieve last inserted row:", err)
+	arg := UpdateAccountParams{
+		ID:      account1.ID,
+		Balance: util.RandomMoney(),
 	}
 
+	account2, err := testQueries.UpdateAccount(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 
@@ -80,15 +69,27 @@ func TestUpdateAccount(t *testing.T) {
 	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 }
 
+func TestDeleteAccount(t *testing.T) {
+	account1 := createRandomAccount(t)
+	err := testQueries.DeleteAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+
+	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, account2)
+}
+
 func TestListAccounts(t *testing.T) {
 	var lastAccount Account
 	for i := 0; i < 10; i++ {
 		lastAccount = createRandomAccount(t)
 	}
+
 	arg := ListAccountsParams{
 		Owner:  lastAccount.Owner,
-		Offset: 0,
 		Limit:  5,
+		Offset: 0,
 	}
 
 	accounts, err := testQueries.ListAccounts(context.Background(), arg)

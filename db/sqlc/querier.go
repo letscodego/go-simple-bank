@@ -6,29 +6,29 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
-	AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) error
-	CreateAccount(ctx context.Context, arg CreateAccountParams) (sql.Result, error)
-	CreateEntry(ctx context.Context, arg CreateEntryParams) (sql.Result, error)
-	CreateTransfer(ctx context.Context, arg CreateTransferParams) (sql.Result, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error)
+	AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error)
+	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
+	CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
+	CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAccount(ctx context.Context, id int64) error
-	DeleteEntry(ctx context.Context, id int64) error
-	DeleteTransfer(ctx context.Context, id int64) error
 	GetAccount(ctx context.Context, id int64) (Account, error)
 	GetAccountForUpdate(ctx context.Context, id int64) (Account, error)
 	GetEntry(ctx context.Context, id int64) (Entry, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	ListEntries(ctx context.Context, arg ListEntriesParams) ([]Entry, error)
 	ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error)
-	UpdateAccount(ctx context.Context, arg UpdateAccountParams) error
-	UpdateEntry(ctx context.Context, arg UpdateEntryParams) error
-	UpdateTransfer(ctx context.Context, arg UpdateTransferParams) error
+	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

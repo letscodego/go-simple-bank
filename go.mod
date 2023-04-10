@@ -9,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.4.4
 	github.com/google/uuid v1.3.0
+	github.com/lib/pq v1.10.7
 	github.com/o1egl/paseto v1.0.0
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2

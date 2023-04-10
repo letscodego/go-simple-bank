@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/letscodego/go-simple-bank/api"
 	db "github.com/letscodego/go-simple-bank/db/sqlc"
 	"github.com/letscodego/go-simple-bank/util"
+	_ "github.com/lib/pq"
 )
 
 func main() {

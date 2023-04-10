@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"log"
 	"testing"
 	"time"
 
@@ -10,28 +9,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomTransfer(t *testing.T, fromAccount Account, toAccount Account) Transfer {
+func createRandomTransfer(t *testing.T, account1, account2 Account) Transfer {
 	arg := CreateTransferParams{
-		FromAccountID: fromAccount.ID,
-		ToAccountID:   toAccount.ID,
+		FromAccountID: account1.ID,
+		ToAccountID:   account2.ID,
 		Amount:        util.RandomMoney(),
 	}
 
-	fetchedTransfer, err := testQueries.CreateTransfer(context.Background(), arg)
+	transfer, err := testQueries.CreateTransfer(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, fetchedTransfer)
+	require.NotEmpty(t, transfer)
 
-	lastId, err := fetchedTransfer.LastInsertId()
-
-	// get the transfer we just inserted
-	transfer, err := testQueries.GetTransfer(context.Background(), lastId)
-	if err != nil {
-		log.Fatal("cannot retrieve last inserted row:", err)
-	}
-
-	require.Equal(t, arg.Amount, transfer.Amount)
 	require.Equal(t, arg.FromAccountID, transfer.FromAccountID)
 	require.Equal(t, arg.ToAccountID, transfer.ToAccountID)
+	require.Equal(t, arg.Amount, transfer.Amount)
 
 	require.NotZero(t, transfer.ID)
 	require.NotZero(t, transfer.CreatedAt)
@@ -48,7 +39,6 @@ func TestCreateTransfer(t *testing.T) {
 func TestGetTransfer(t *testing.T) {
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
-
 	transfer1 := createRandomTransfer(t, account1, account2)
 
 	transfer2, err := testQueries.GetTransfer(context.Background(), transfer1.ID)
@@ -58,46 +48,24 @@ func TestGetTransfer(t *testing.T) {
 	require.Equal(t, transfer1.ID, transfer2.ID)
 	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)
 	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)
+	require.Equal(t, transfer1.Amount, transfer2.Amount)
 	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
 }
 
-func TestUpdateTransfer(t *testing.T) {
+func TestListTransfer(t *testing.T) {
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 
-	transfer1 := createRandomTransfer(t, account1, account2)
-
-	arg := UpdateTransferParams{Amount: util.RandomMoney(), ID: transfer1.ID}
-	err := testQueries.UpdateTransfer(context.Background(), arg)
-
-	// get the transfer we just updated
-	transfer2, e := testQueries.GetTransfer(context.Background(), transfer1.ID)
-	if e != nil {
-		log.Fatal("cannot retrieve last inserted row:", err)
-	}
-
-	require.NoError(t, err)
-	require.NotEmpty(t, transfer2)
-
-	require.Equal(t, transfer1.ID, transfer2.ID)
-	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)
-	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)
-	require.Equal(t, arg.Amount, transfer2.Amount)
-	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
-}
-
-func TestListTransfers(t *testing.T) {
-	account1 := createRandomAccount(t)
-	account2 := createRandomAccount(t)
-
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 5; i++ {
 		createRandomTransfer(t, account1, account2)
+		createRandomTransfer(t, account2, account1)
 	}
+
 	arg := ListTransfersParams{
 		FromAccountID: account1.ID,
-		ToAccountID:   account2.ID,
-		Offset:        5,
+		ToAccountID:   account1.ID,
 		Limit:         5,
+		Offset:        5,
 	}
 
 	transfers, err := testQueries.ListTransfers(context.Background(), arg)
@@ -106,7 +74,6 @@ func TestListTransfers(t *testing.T) {
 
 	for _, transfer := range transfers {
 		require.NotEmpty(t, transfer)
-		require.Equal(t, arg.FromAccountID, transfer.FromAccountID)
-		require.Equal(t, arg.ToAccountID, transfer.ToAccountID)
+		require.True(t, transfer.FromAccountID == account1.ID || transfer.ToAccountID == account1.ID)
 	}
 }
