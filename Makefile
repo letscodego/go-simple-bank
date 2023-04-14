@@ -48,4 +48,13 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/letscodego/go-simple-bank/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown mysql_createdb mysql_dropdb mysql_migrateup mysql_migratedown mysql sqlc test server mockgen mysql_migrateup1 mysql_migratedown1 con
+proto:
+	del /s .\pb\*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+    --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+    proto/*.proto
+
+evans:
+	evans --host localhost --port 7070 -r repl
+
+.PHONY: postgres createdb dropdb migrateup migratedown mysql_createdb mysql_dropdb mysql_migrateup mysql_migratedown mysql sqlc test server mockgen mysql_migrateup1 mysql_migratedown1 con proto evans
