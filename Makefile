@@ -1,5 +1,5 @@
 postgres:
-	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:15-alpine
+	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=simple_bank -d postgres:15-alpine
 
 mysql:
 	docker run --name mysql -p 3306:3306 --network bank-network --env MYSQL_ROOT_PASSWORD=my-secret-pw --env MYSQL_DATABASE=simple_bank mysql
@@ -40,7 +40,7 @@ sqlc:
 	docker run --rm -v "${CURDIR}:/src" -w /src kjconroy/sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 
 server:
 	go run main.go

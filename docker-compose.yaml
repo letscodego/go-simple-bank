@@ -1,27 +1,32 @@
-version: "3.9"
+version: "3"
 services:
-  mysql:
-    image: mysql
-    environment: 
-      - MYSQL_ROOT_PASSWORD="my-secret-pw"
-      - MYSQL_DATABASE=simple_bank
-      - MYSQL_ROOT_USER="root"
-    volumes:
-      - simplebank:/var/lib/mysql
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=simple_bank
     ports:
-      - 3306:3306
+      - "5432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "simple_bank", "-U", "root" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
-      - DB_SOURCE=root:my-secret-pw@tcp(mysql:3306)/simple_bank?parseTime=true&autocommit=true
-      - MIGRATE_SOURCE=mysql://root:my-secret-pw@tcp(mysql:3306)/simple_bank
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
     depends_on:
-      - "mysql" 
-    entrypoint: [ "/app/wait-for.sh", "mysql:3306", "--", "/app/start.sh" ]
+      postgres:
+        condition: service_healthy
     command: [ "/app/main" ]
+
 volumes:
-  simplebank:
+  database:
