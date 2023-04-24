@@ -2,11 +2,14 @@ package gapi
 
 import (
 	"context"
+	"time"
 
+	"github.com/hibiken/asynq"
 	db "github.com/letscodego/go-simple-bank/db/sqlc"
 	"github.com/letscodego/go-simple-bank/pb"
 	"github.com/letscodego/go-simple-bank/util"
 	"github.com/letscodego/go-simple-bank/val"
+	"github.com/letscodego/go-simple-bank/worker"
 	"github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -36,10 +39,25 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
 			case "unique_violation":
-				return nil, status.Errorf(codes.AlreadyExists, "user already exists %s", err)
+				return nil, status.Errorf(codes.AlreadyExists, "user already exists: %s", err)
 			}
 		}
-		return nil, status.Errorf(codes.Internal, "failed to create user %s", err)
+		return nil, status.Errorf(codes.Internal, "failed to create user: %s", err)
+	}
+
+	taskPayload := &worker.PayloadSendVerifyEmail{
+		Username: req.Username,
+	}
+
+	opts := []asynq.Option{
+		asynq.MaxRetry(10),
+		asynq.ProcessIn(10 * time.Second),
+		asynq.Queue(worker.QueueCritical),
+	}
+
+	err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to distribute task to send verify email: %s", err)
 	}
 
 	rsp := &pb.CreateUserResponse{
